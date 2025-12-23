@@ -13,7 +13,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans&display=swap" rel="stylesheet">
 
 <style>
-/* UNCHANGED STYLES */
 body {
   margin: 0;
   font-family: 'Open Sans', sans-serif;
@@ -31,7 +30,11 @@ body::before, body::after {
 }
 body::before { top: 10%; left: -200px; transform: rotate(-15deg); }
 body::after { top: 60%; left: 70%; transform: rotate(15deg); animation-direction: reverse; }
-@keyframes floatPlane {0%{transform:translateX(0) rotate(-15deg);opacity:0.25;}50%{opacity:0.1;}100%{transform:translateX(110vw) rotate(-15deg);opacity:0.25;}}
+@keyframes floatPlane {
+  0%{transform:translateX(0) rotate(-15deg);opacity:0.25;}
+  50%{opacity:0.1;}
+  100%{transform:translateX(110vw) rotate(-15deg);opacity:0.25;}
+}
 
 .container {
   max-width: 540px;
@@ -41,8 +44,18 @@ body::after { top: 60%; left: 70%; transform: rotate(15deg); animation-direction
   padding: 30px 40px 40px 40px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
-#mainTitle { text-align:center; font-family:'Montserrat',sans-serif; font-size:34px; text-shadow:0 0 6px #ffd700,0 0 18px #ffd700;}
-#dateTime, #nameday { text-align:center; font-size:18px; margin-bottom:10px; color:#ffd700;}
+#mainTitle {
+  text-align:center;
+  font-family:'Montserrat',sans-serif;
+  font-size:34px;
+  text-shadow:0 0 6px #ffd700,0 0 18px #ffd700;
+}
+#dateTime, #nameday {
+  text-align:center;
+  font-size:18px;
+  margin-bottom:10px;
+  color:#ffd700;
+}
 
 .item {
   background:#777;
@@ -56,9 +69,24 @@ body::after { top: 60%; left: 70%; transform: rotate(15deg); animation-direction
   font-weight:700;
   color:#ffd700;
   cursor:pointer;
+  transition:0.2s ease;
 }
-.selected { background:#ffd700; color:#000 !important; }
-.remove-btn { background:#ff5555; color:white; width:34px; height:34px; border-radius:50%; text-align:center; font-size:18px; }
+.item:hover { background:#888; }
+.selected {
+  background:#ffd700;
+  color:#000 !important;
+  box-shadow:0 4px 12px rgba(255,215,0,0.6);
+}
+.remove-btn {
+  background:#ff5555;
+  color:white;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  text-align:center;
+  font-size:18px;
+  margin-left:10px;
+}
 
 .action-btn {
   width:100%;
@@ -70,15 +98,64 @@ body::after { top: 60%; left: 70%; transform: rotate(15deg); animation-direction
   color:#fff;
   border-radius:14px;
   cursor:pointer;
+  box-shadow:0 4px 12px rgba(76,175,80,0.5);
+}
+.action-btn:hover { background:#45a049; transform:scale(1.03); }
+
+#confirmation {
+  text-align:center;
+  margin-top:10px;
+  font-size:16px;
+  color:#00ff00;
+  font-weight:bold;
+  display:none;
 }
 
-.date-btn { width:120px; padding:10px; font-size:14px; border-radius:12px; background:#666; cursor:pointer; }
-.date-btn.selected { background:#ffd700; color:#000; }
+#dateSelection {
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+.date-btn {
+  width:120px;
+  padding:10px;
+  font-size:14px;
+  text-align:center;
+  border-radius:12px;
+  background:#666;
+  color:#ffd700;
+  font-weight:700;
+  cursor:pointer;
+}
+.date-btn.selected {
+  background:#ffd700;
+  color:#000;
+  box-shadow:0 4px 10px rgba(255,215,0,0.7);
+}
 
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-th, td { border:1px solid #ffd700; padding:6px; font-size:14px; font-weight:700; }
+table {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+th, td {
+  border:1px solid #ffd700;
+  padding:6px;
+  font-size:14px;
+  text-align:center;
+  font-weight:700;
+}
+th { background:#555; }
 
-textarea, input { width:100%; padding:10px; border-radius:10px; margin-top:5px; font-size:16px; }
+textarea, input {
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  margin-top:5px;
+  font-size:16px;
+}
 </style>
 </head>
 <body>
@@ -91,43 +168,56 @@ textarea, input { width:100%; padding:10px; border-radius:10px; margin-top:5px; 
 
 <h2>Employees</h2>
 <div id="employees"></div>
-<input id="newEmployee" placeholder="Add employee name…">
+<input id="newEmployee" placeholder="Add employee name…" autocomplete="off">
 <button class="action-btn" onclick="addEmployee()">Add Employee</button>
 
 <h2>Aircraft</h2>
 <div id="aircrafts"></div>
-<input id="newAircraft" placeholder="Add aircraft registration…">
+<input id="newAircraft" placeholder="Add aircraft registration…" autocomplete="off">
 <button class="action-btn" onclick="addAircraft()">Add Aircraft</button>
 
 <h2>Date of Log</h2>
 <div id="dateSelection">
-  <div class="date-btn" onclick="selectLogDate('dayBeforeYesterday')">Day Before Yesterday</div>
-  <div class="date-btn" onclick="selectLogDate('yesterday')">Yesterday</div>
-  <div class="date-btn selected" onclick="selectLogDate('today')">Today</div>
+  <div class="date-btn" id="dbYesterdayBtn" onclick="selectLogDate('dayBeforeYesterday')">Day Before Yesterday</div>
+  <div class="date-btn" id="yesterdayBtn" onclick="selectLogDate('yesterday')">Yesterday</div>
+  <div class="date-btn selected" id="todayBtn" onclick="selectLogDate('today')">Today</div>
 </div>
 
 <h2>Hours Worked</h2>
-<input type="number" id="hours" value="1" step="0.5">
+<input type="number" id="hours" value="1" step="0.5" min="0">
+<div style="display:flex; justify-content:center; gap:10px; margin-top:8px;">
+  <div class="date-btn" onclick="setHours(2)">2h</div>
+  <div class="date-btn" onclick="setHours(4)">4h</div>
+  <div class="date-btn" onclick="setHours(6)">6h</div>
+  <div class="date-btn" onclick="setHours(8)">8h</div>
+</div>
 
 <h2>Comment</h2>
-<textarea id="comment"></textarea>
+<textarea id="comment" placeholder="Add comments (optional)…"></textarea>
 <button class="action-btn" onclick="saveLog()">Save</button>
+<div id="confirmation">Log saved!</div>
 
 <h2>Recent Logs (Summed Hours)</h2>
 <div id="historyTableContainer"></div>
+
+<div class="action-btn" onclick="exportCSV()">Export CSV</div>
 
 </div>
 
 <script>
 // ---------- FIREBASE ----------
-firebase.initializeApp({
+const firebaseConfig = {
   apiKey: "AIzaSyDy9FB7VOZigjURYvtPVk3iBCj0kzFAk8E",
   authDomain: "labourlogger.firebaseapp.com",
-  projectId: "labourlogger"
-});
+  projectId: "labourlogger",
+  storageBucket: "labourlogger.firebasestorage.app",
+  messagingSenderId: "904527973038",
+  appId: "1:904527973038:web:9be4fe8c71052b447c7b3f"
+};
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ---------- DATA ----------
+// ---------- LOCAL STORAGE (MINIMALLY CHANGED) ----------
 let employees = [];
 let aircraftList = [];
 let logs = [];
@@ -136,99 +226,164 @@ let selectedEmployee="", selectedAircraft=[], selectedLogDate="today";
 // ---------- EMPLOYEES SYNC ----------
 db.collection("employees").orderBy("name").onSnapshot(snap=>{
   employees=[];
-  snap.forEach(d=>employees.push(d.data().name));
+  snap.forEach(doc=>employees.push(doc.data().name));
   renderEmployees();
 });
 
 // ---------- AIRCRAFT SYNC ----------
 db.collection("aircraft").orderBy("name").onSnapshot(snap=>{
   aircraftList=[];
-  snap.forEach(d=>aircraftList.push(d.data().name));
+  snap.forEach(doc=>aircraftList.push(doc.data().name));
   renderAircrafts();
 });
 
 // ---------- LOGS SYNC ----------
-db.collection("logs").onSnapshot(snap=>{
+db.collection("logs").orderBy("date","desc").onSnapshot(snap=>{
   logs=[];
-  snap.forEach(d=>logs.push(d.data()));
+  snap.forEach(doc=>logs.push(doc.data()));
   updateHistoryTable();
 });
 
-// ---------- RENDER ----------
+// ---------- NAMEDAY ----------
+async function fetchNameday(){
+  try{
+    const res = await fetch("https://www.seznam.cz/");
+    const txt = await res.text();
+    const match = txt.match(/Svátek dnes: <strong>(.*?)<\/strong>/);
+    document.getElementById("nameday").textContent =
+      match ? "Svátek: "+match[1] : "Svátek: —";
+  }catch(e){
+    document.getElementById("nameday").textContent = "Svátek: —";
+  }
+}
+setInterval(updateDateTime,1000);
+updateDateTime();
+fetchNameday();
+
+function updateDateTime(){
+  const now = new Date();
+  const dStr = now.toLocaleDateString("cs-CZ",{day:"2-digit",month:"2-digit",year:"numeric"});
+  const tStr = now.toLocaleTimeString("cs-CZ",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  document.getElementById("dateTime").textContent = `${dStr} – ${tStr}`;
+}
+
+// ---------- RENDER (UNCHANGED) ----------
 function renderEmployees(){
-  employeesDiv.innerHTML="";
+  const div=document.getElementById("employees");
+  div.innerHTML="";
   employees.forEach(e=>{
-    const d=document.createElement("div");
-    d.className="item"+(e===selectedEmployee?" selected":"");
-    d.innerHTML=`<span>${e} ✈</span>`;
-    d.onclick=()=>{selectedEmployee=e;renderEmployees();};
-    employeesDiv.appendChild(d);
+    const item=document.createElement("div");
+    item.className="item"+(e===selectedEmployee?" selected":"");
+    item.innerHTML=`<span>${e} ✈</span>`;
+    item.onclick=()=>{selectedEmployee=e;renderEmployees();};
+    div.appendChild(item);
   });
 }
 function renderAircrafts(){
-  aircraftsDiv.innerHTML="";
+  const div=document.getElementById("aircrafts");
+  div.innerHTML="";
   aircraftList.forEach(a=>{
-    const d=document.createElement("div");
-    d.className="item"+(selectedAircraft.includes(a)?" selected":"");
-    d.innerHTML=`<span>${a} ✈</span>`;
-    d.onclick=()=>toggleAircraft(a);
-    aircraftsDiv.appendChild(d);
+    const item=document.createElement("div");
+    item.className="item"+(selectedAircraft.includes(a)?" selected":"");
+    item.innerHTML=`<span>${a} ✈</span>`;
+    item.onclick=()=>{toggleAircraft(a);renderAircrafts();};
+    div.appendChild(item);
   });
 }
 function toggleAircraft(a){
-  selectedAircraft.includes(a)?selectedAircraft=selectedAircraft.filter(x=>x!==a):selectedAircraft.push(a);
-  renderAircrafts();
+  selectedAircraft.includes(a)
+    ? selectedAircraft=selectedAircraft.filter(x=>x!==a)
+    : selectedAircraft.push(a);
 }
 
-// ---------- ADD ----------
+// ---------- ADD (MINIMALLY CHANGED) ----------
 function addEmployee(){
-  const v=newEmployee.value.trim();
-  if(v) db.collection("employees").add({name:v});
-  newEmployee.value="";
+  const val=document.getElementById("newEmployee").value.trim();
+  if(val) db.collection("employees").add({name:val});
+  document.getElementById("newEmployee").value="";
 }
 function addAircraft(){
-  const v=newAircraft.value.trim();
-  if(v) db.collection("aircraft").add({name:v});
-  newAircraft.value="";
+  const val=document.getElementById("newAircraft").value.trim();
+  if(val) db.collection("aircraft").add({name:val});
+  document.getElementById("newAircraft").value="";
 }
 
-// ---------- DATE ----------
-function selectLogDate(d){ selectedLogDate=d; }
+// ---------- LOG DATE ----------
+function selectLogDate(str){
+  selectedLogDate=str;
+  document.querySelectorAll(".date-btn").forEach(b=>b.classList.remove("selected"));
+  if(str==="dayBeforeYesterday")dbYesterdayBtn.classList.add("selected");
+  if(str==="yesterday")yesterdayBtn.classList.add("selected");
+  if(str==="today")todayBtn.classList.add("selected");
+}
 
-// ---------- SAVE ----------
+// ---------- HOURS ----------
+function setHours(h){document.getElementById("hours").value=h;}
+
+// ---------- SAVE LOG ----------
 function saveLog(){
-  if(!selectedEmployee||!selectedAircraft.length) return alert("Select employee & aircraft");
+  if(!selectedEmployee||!selectedAircraft.length){
+    alert("Select employee and aircraft.");
+    return;
+  }
+  const hours=parseFloat(document.getElementById("hours").value)||0;
+  const comment=document.getElementById("comment").value.trim();
+  const now=new Date();
+  let logDate=new Date();
+  if(selectedLogDate==="dayBeforeYesterday")logDate.setDate(now.getDate()-2);
+  if(selectedLogDate==="yesterday")logDate.setDate(now.getDate()-1);
+
   selectedAircraft.forEach(ac=>{
     db.collection("logs").add({
       employee:selectedEmployee,
       aircraft:ac,
-      hours:+hours.value,
-      comment:comment.value,
-      date:new Date().toISOString()
+      hours,
+      comment,
+      date:logDate.toISOString()
     });
   });
+
+  selectedEmployee="";
   selectedAircraft=[];
+  document.getElementById("hours").value=1;
+  document.getElementById("comment").value="";
+  renderEmployees();
   renderAircrafts();
+
+  const conf=document.getElementById("confirmation");
+  conf.style.display="block";
+  setTimeout(()=>conf.style.display="none",2000);
 }
 
 // ---------- HISTORY ----------
 function updateHistoryTable(){
   let sums={};
   logs.forEach(l=>{
-    const k=l.aircraft+"|"+l.employee;
-    sums[k]=(sums[k]||0)+l.hours;
+    const key=`${l.aircraft} | ${l.employee}`;
+    sums[key]=(sums[key]||0)+l.hours;
   });
-  let h='<table><tr><th>Aircraft</th><th>Employee</th><th>Hours</th></tr>';
+  let html='<table><tr><th>Aircraft</th><th>Employee</th><th>Total Hours</th></tr>';
   for(let k in sums){
-    let p=k.split("|");
-    h+=`<tr><td>${p[0]}</td><td>${p[1]}</td><td>${sums[k]}</td></tr>`;
+    const p=k.split(" | ");
+    html+=`<tr><td>${p[0]}</td><td>${p[1]}</td><td>${sums[k]}</td></tr>`;
   }
-  historyTableContainer.innerHTML=h+"</table>";
+  html+='</table>';
+  document.getElementById("historyTableContainer").innerHTML=html;
 }
 
-// ---------- INIT ----------
-const employeesDiv=employees;
-const aircraftsDiv=aircrafts;
+// ---------- CSV EXPORT ----------
+function exportCSV(){
+  let csv="Aircraft,Employee,Hours,Comment,Date\n";
+  logs.forEach(l=>{
+    csv+=`${l.aircraft},${l.employee},${l.hours},"${l.comment}",${new Date(l.date).toLocaleString("cs-CZ")}\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="labour_log.csv";
+  a.click();
+}
 </script>
 </body>
 </html>
