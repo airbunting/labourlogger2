@@ -18,30 +18,17 @@ body {
   font-family: 'Open Sans', sans-serif;
   background: linear-gradient(160deg,#888,#ccc);
   color: #ffd700;
-  overflow-x: hidden;
 }
-body::before, body::after {
-  content: "✈";
-  position: fixed;
-  color: rgba(255,215,0,0.25);
-  font-size: 250px;
-  pointer-events: none;
-  animation: floatPlane 30s infinite linear;
-}
-body::before { top: 10%; left: -200px; transform: rotate(-15deg); }
-body::after { top: 60%; left: 70%; transform: rotate(15deg); animation-direction: reverse; }
-@keyframes floatPlane {0%{transform:translateX(0) rotate(-15deg);opacity:0.25;}50%{opacity:0.1;}100%{transform:translateX(110vw) rotate(-15deg);opacity:0.25;}}
-
 .container {
   max-width: 540px;
   margin: 20px auto;
   background: linear-gradient(145deg,#555,#777);
   border-radius: 18px;
-  padding: 30px 40px 40px 40px;
+  padding: 30px 40px 40px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
-#mainTitle { text-align:center; font-family:'Montserrat',sans-serif; font-size:34px; text-shadow:0 0 6px #ffd700,0 0 18px #ffd700;}
-#dateTime, #nameday { text-align:center; font-size:18px; margin-bottom:10px; color:#ffd700;}
+#mainTitle { text-align:center; font-family:'Montserrat',sans-serif; font-size:34px; }
+#dateTime, #nameday { text-align:center; font-size:18px; margin-bottom:10px; }
 
 .item {
   background:#777;
@@ -53,13 +40,20 @@ body::after { top: 60%; left: 70%; transform: rotate(15deg); animation-direction
   align-items:center;
   font-size:18px;
   font-weight:700;
-  color:#ffd700;
   cursor:pointer;
-  transition:0.2s ease;
 }
 .item:hover { background:#888; }
-.selected { background:#ffd700; color:#000 !important; box-shadow:0 4px 12px rgba(255,215,0,0.6);}
-.remove-btn { background:#ff5555; color:white; width:34px; height:34px; border-radius:50%; text-align:center; font-size:18px; margin-left:10px;}
+.selected { background:#ffd700; color:#000; }
+
+.remove-btn {
+  background:#ff5555;
+  color:white;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  text-align:center;
+  font-size:18px;
+}
 
 .action-btn {
   width:100%;
@@ -71,228 +65,214 @@ body::after { top: 60%; left: 70%; transform: rotate(15deg); animation-direction
   color:#fff;
   border-radius:14px;
   cursor:pointer;
-  box-shadow:0 4px 12px rgba(76,175,80,0.5);
-  position:relative;
 }
-.action-btn:hover { background:#45a049; transform:scale(1.03); }
 
-#confirmation { text-align:center; margin-top:10px; font-size:16px; color:#00ff00; font-weight:bold; display:none; }
+.date-btn {
+  width:120px;
+  padding:10px;
+  font-size:14px;
+  text-align:center;
+  border-radius:12px;
+  background:#666;
+  cursor:pointer;
+}
+.date-btn.selected { background:#ffd700; color:#000; }
 
-#dateSelection { display:flex; gap:10px; justify-content:center; margin-bottom:15px; flex-wrap:wrap;}
-.date-btn { width:120px; padding:10px; font-size:14px; text-align:center; border-radius:12px; background:#666; color:#ffd700; font-weight:700; cursor:pointer; }
-.date-btn.selected { background:#ffd700; color:#000; box-shadow:0 4px 10px rgba(255,215,0,0.7); }
-
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-th, td { border:1px solid #ffd700; padding:6px; font-size:14px; text-align:center; font-weight:700; }
+table {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+th, td {
+  border:1px solid #ffd700;
+  padding:6px;
+  font-size:14px;
+  text-align:center;
+  font-weight:700;
+}
 th { background:#555; }
 
-textarea { width:100%; padding:10px; border-radius:10px; margin-top:5px; font-size:16px; }
-input { width:100%; padding:10px; border-radius:10px; margin-top:5px; font-size:16px; }
+input, textarea {
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  margin-top:5px;
+  font-size:16px;
+}
+#confirmation {
+  text-align:center;
+  margin-top:10px;
+  color:#00ff00;
+  font-weight:bold;
+  display:none;
+}
 </style>
 </head>
 <body>
 
 <div class="container">
-
 <h2 id="mainTitle">NAZDAR!</h2>
 <div id="dateTime"></div>
 <div id="nameday">Svátek: …</div>
 
 <h2>Employees</h2>
 <div id="employees"></div>
-<input id="newEmployee" placeholder="Add employee name…" autocomplete="off">
+<input id="newEmployee" placeholder="Add employee name…">
 <button class="action-btn" onclick="addEmployee()">Add Employee</button>
 
 <h2>Aircraft</h2>
 <div id="aircrafts"></div>
-<input id="newAircraft" placeholder="Add aircraft registration…" autocomplete="off">
+<input id="newAircraft" placeholder="Add aircraft registration…">
 <button class="action-btn" onclick="addAircraft()">Add Aircraft</button>
 
 <h2>Date of Log</h2>
-<div id="dateSelection">
-  <div class="date-btn" id="dbYesterdayBtn" onclick="selectLogDate('dayBeforeYesterday')">Day Before Yesterday</div>
-  <div class="date-btn" id="yesterdayBtn" onclick="selectLogDate('yesterday')">Yesterday</div>
-  <div class="date-btn selected" id="todayBtn" onclick="selectLogDate('today')">Today</div>
+<div style="display:flex;gap:10px;justify-content:center;">
+  <div class="date-btn" onclick="selectLogDate('dayBeforeYesterday')">Day Before Yesterday</div>
+  <div class="date-btn" onclick="selectLogDate('yesterday')">Yesterday</div>
+  <div class="date-btn selected" onclick="selectLogDate('today')">Today</div>
 </div>
 
 <h2>Hours Worked</h2>
-<input type="number" id="hours" value="1" step="0.5" min="0">
-<div style="display:flex; justify-content:center; gap:10px; margin-top:8px;">
-  <div class="date-btn" onclick="setHours(2)">2h</div>
-  <div class="date-btn" onclick="setHours(4)">4h</div>
-  <div class="date-btn" onclick="setHours(6)">6h</div>
-  <div class="date-btn" onclick="setHours(8)">8h</div>
-</div>
+<input type="number" id="hours" value="1" step="0.5">
 
 <h2>Comment</h2>
-<textarea id="comment" placeholder="Add comments (optional)…"></textarea>
+<textarea id="comment"></textarea>
+
 <button class="action-btn" onclick="saveLog()">Save</button>
 <div id="confirmation">Log saved!</div>
 
 <h2>Recent Logs (Summed Hours)</h2>
 <div id="historyTableContainer"></div>
-
-<div class="action-btn" onclick="exportCSV()">Export CSV</div>
-
 </div>
 
 <script>
-// ---------- FIREBASE ----------
-const firebaseConfig = {
+// 🔥 FIREBASE CONFIG
+firebase.initializeApp({
   apiKey: "AIzaSyDy9FB7VOZigjURYvtPVk3iBCj0kzFAk8E",
   authDomain: "labourlogger.firebaseapp.com",
-  projectId: "labourlogger",
-  storageBucket: "labourlogger.firebasestorage.app",
-  messagingSenderId: "904527973038",
-  appId: "1:904527973038:web:9be4fe8c71052b447c7b3f"
-};
-firebase.initializeApp(firebaseConfig);
+  projectId: "labourlogger"
+});
 const db = firebase.firestore();
 
-// ---------- LOCAL STORAGE ----------
+// LOCAL DATA
 let employees = JSON.parse(localStorage.getItem("employees")||'["John","Mike","Anna"]');
-let aircraftList = JSON.parse(localStorage.getItem("aircrafts")||'["OK-AIM","OK-ABC","OK-SID"]');
-let logs = JSON.parse(localStorage.getItem("logs")||'[]');
+let aircraftList = JSON.parse(localStorage.getItem("aircrafts")||'["OK-AIM","OK-ABC"]');
+let logs = [];
 let selectedEmployee="", selectedAircraft=[], selectedLogDate="today";
 
-// ---------- NAMEDAY ----------
-async function fetchNameday(){
-  try{
-    const res = await fetch("https://www.seznam.cz/");
-    const txt = await res.text();
-    const match = txt.match(/Svátek dnes: <strong>(.*?)<\/strong>/);
-    document.getElementById("nameday").textContent = match ? "Svátek: "+match[1] : "Svátek: —";
-  }catch(e){ document.getElementById("nameday").textContent = "Svátek: —"; }
-}
-setInterval(()=>updateDateTime(),1000);
-updateDateTime();
-fetchNameday();
+// TIME
+setInterval(()=>{
+  document.getElementById("dateTime").textContent =
+    new Date().toLocaleString("cs-CZ");
+},1000);
 
-function updateDateTime(){
-  const now = new Date();
-  const dStr = now.toLocaleDateString("cs-CZ",{day:"2-digit",month:"2-digit",year:"numeric"});
-  const tStr = now.toLocaleTimeString("cs-CZ",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
-  document.getElementById("dateTime").textContent = `${dStr} – ${tStr}`;
-}
-
-// ---------- RENDER ----------
+// RENDER
 function renderEmployees(){
-  const div = document.getElementById("employees");
-  div.innerHTML = "";
+  employeesDiv.innerHTML="";
   employees.forEach(e=>{
-    const item = document.createElement("div");
-    item.className = "item"+(e===selectedEmployee?" selected":"");
-    item.innerHTML = `<span>${e} ✈</span><span class="remove-btn" onclick="removeEmployee('${e}',event)">×</span>`;
-    item.onclick = ()=>{ selectedEmployee=e; renderEmployees(); };
-    div.appendChild(item);
+    const d=document.createElement("div");
+    d.className="item"+(e===selectedEmployee?" selected":"");
+    d.textContent=e;
+    d.onclick=()=>{selectedEmployee=e;renderEmployees();};
+    employeesDiv.appendChild(d);
   });
 }
 function renderAircrafts(){
-  const div = document.getElementById("aircrafts");
-  div.innerHTML = "";
+  aircraftsDiv.innerHTML="";
   aircraftList.forEach(a=>{
-    const item = document.createElement("div");
-    item.className = "item"+(selectedAircraft.includes(a)?" selected":"");
-    item.innerHTML = `<span>${a} ✈</span><span class="remove-btn" onclick="removeAircraft('${a}',event)">×</span>`;
-    item.onclick = ()=>{ toggleAircraft(a); renderAircrafts(); };
-    div.appendChild(item);
+    const d=document.createElement("div");
+    d.className="item"+(selectedAircraft.includes(a)?" selected":"");
+    d.textContent=a;
+    d.onclick=()=>toggleAircraft(a);
+    aircraftsDiv.appendChild(d);
   });
 }
 function toggleAircraft(a){
-  selectedAircraft.includes(a)? selectedAircraft=selectedAircraft.filter(x=>x!==a) : selectedAircraft.push(a);
+  selectedAircraft.includes(a)
+    ? selectedAircraft=selectedAircraft.filter(x=>x!==a)
+    : selectedAircraft.push(a);
   renderAircrafts();
 }
 
+// ADD
 function addEmployee(){
-  const val = document.getElementById("newEmployee").value.trim();
-  if(val && !employees.includes(val)){
-    employees.push(val);
+  const v=newEmployee.value.trim();
+  if(v&&!employees.includes(v)){
+    employees.push(v);
     localStorage.setItem("employees",JSON.stringify(employees));
     renderEmployees();
-    document.getElementById("newEmployee").value="";
+    newEmployee.value="";
   }
 }
 function addAircraft(){
-  const val = document.getElementById("newAircraft").value.trim();
-  if(val && !aircraftList.includes(val)){
-    aircraftList.push(val);
+  const v=newAircraft.value.trim();
+  if(v&&!aircraftList.includes(v)){
+    aircraftList.push(v);
     localStorage.setItem("aircrafts",JSON.stringify(aircraftList));
     renderAircrafts();
-    document.getElementById("newAircraft").value="";
+    newAircraft.value="";
   }
 }
-function removeEmployee(name,e){ e.stopPropagation(); employees=employees.filter(x=>x!==name); localStorage.setItem("employees",JSON.stringify(employees)); renderEmployees();}
-function removeAircraft(name,e){ e.stopPropagation(); aircraftList=aircraftList.filter(x=>x!==name); localStorage.setItem("aircrafts",JSON.stringify(aircraftList)); renderAircrafts();}
 
-// ---------- LOG DATE ----------
-function selectLogDate(str){
-  selectedLogDate=str;
-  document.querySelectorAll(".date-btn").forEach(b=>b.classList.remove("selected"));
-  if(str==="dayBeforeYesterday") document.getElementById("dbYesterdayBtn").classList.add("selected");
-  if(str==="yesterday") document.getElementById("yesterdayBtn").classList.add("selected");
-  if(str==="today") document.getElementById("todayBtn").classList.add("selected");
-}
+// DATE
+function selectLogDate(d){ selectedLogDate=d; }
 
-// ---------- HOURS ----------
-function setHours(h){ document.getElementById("hours").value=h; }
-
-// ---------- SAVE LOG ----------
+// SAVE
 function saveLog(){
-  if(!selectedEmployee || selectedAircraft.length===0) { alert("Select employee and aircraft."); return; }
-  const hours = parseFloat(document.getElementById("hours").value)||0;
-  const comment = document.getElementById("comment").value.trim();
-  const now = new Date();
-  let logDate = new Date();
-  if(selectedLogDate==="dayBeforeYesterday") logDate.setDate(now.getDate()-2);
-  if(selectedLogDate==="yesterday") logDate.setDate(now.getDate()-1);
-  if(selectedLogDate==="today") logDate.setDate(now.getDate());
+  if(!selectedEmployee||!selectedAircraft.length)return alert("Select employee & aircraft");
+
+  let date=new Date();
+  if(selectedLogDate==="yesterday")date.setDate(date.getDate()-1);
+  if(selectedLogDate==="dayBeforeYesterday")date.setDate(date.getDate()-2);
 
   selectedAircraft.forEach(ac=>{
-    const logEntry = {employee:selectedEmployee,aircraft:ac,hours,comment,date:logDate.toISOString()};
-    logs.push(logEntry);
-    db.collection("logs").add(logEntry);
+    db.collection("logs").add({
+      employee:selectedEmployee,
+      aircraft:ac,
+      hours:+hours.value,
+      comment:comment.value,
+      date:date.toISOString(),
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
   });
 
-  localStorage.setItem("logs",JSON.stringify(logs));
-  selectedEmployee=""; selectedAircraft=[]; document.getElementById("hours").value=1; document.getElementById("comment").value="";
-  renderEmployees(); renderAircrafts(); updateHistoryTable();
+  comment.value="";
+  hours.value=1;
+  selectedAircraft=[];
+  renderAircrafts();
 
-  const conf = document.getElementById("confirmation");
-  conf.style.display="block";
-  setTimeout(()=>{ conf.style.display="none"; },2000);
+  confirmation.style.display="block";
+  setTimeout(()=>confirmation.style.display="none",2000);
 }
 
-// ---------- HISTORY TABLE ----------
+// 🔥 REAL-TIME SYNC
+db.collection("logs")
+  .orderBy("date","desc")
+  .onSnapshot(snap=>{
+    logs=[];
+    snap.forEach(d=>logs.push(d.data()));
+    updateHistoryTable();
+  });
+
 function updateHistoryTable(){
-  let sums = {};
+  let sums={};
   logs.forEach(l=>{
-    const key = `${l.aircraft} | ${l.employee}`;
-    sums[key] = (sums[key]||0)+l.hours;
+    const k=l.aircraft+"|"+l.employee;
+    sums[k]=(sums[k]||0)+l.hours;
   });
-  let html = '<table><tr><th>Aircraft</th><th>Employee</th><th>Total Hours</th></tr>';
+  let h='<table><tr><th>Aircraft</th><th>Employee</th><th>Hours</th></tr>';
   for(let k in sums){
-    const parts = k.split(" | ");
-    html += `<tr><td>${parts[0]}</td><td>${parts[1]}</td><td>${sums[k]}</td></tr>`;
+    let p=k.split("|");
+    h+=`<tr><td>${p[0]}</td><td>${p[1]}</td><td>${sums[k]}</td></tr>`;
   }
-  html+='</table>';
-  document.getElementById("historyTableContainer").innerHTML = html;
+  historyTableContainer.innerHTML=h+"</table>";
 }
 
-// ---------- CSV EXPORT ----------
-function exportCSV(){
-  let csv="Aircraft,Employee,Hours,Comment,Date\n";
-  logs.forEach(l=>{
-    csv+=`${l.aircraft},${l.employee},${l.hours},"${l.comment}",${new Date(l.date).toLocaleString("cs-CZ")}\n`;
-  });
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href=url; a.download='labour_log.csv';
-  a.click();
-}
-
-// ---------- INIT ----------
-renderEmployees(); renderAircrafts(); updateHistoryTable();
+// INIT
+const employeesDiv=employees;
+const aircraftsDiv=aircrafts;
+renderEmployees();
+renderAircrafts();
 </script>
 </body>
 </html>
